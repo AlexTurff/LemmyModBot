@@ -4,31 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using static LemmyModBot.ResponseModels.GetCommentsResponse;
+using static LemmyModBot.ResponseModels.GetPostsResponse;
 
 namespace LemmyModBot.ResponseModels
 {
-    public class GetPostsResponse
+    internal partial class GetCommentsResponse
     {
-        [JsonPropertyName("posts")]
-        public List<PostWrapper> Posts { get; set; }
+        [JsonPropertyName("comments")]
+        public List<CommentWrapper> Comments { get; set; }
 
-        public class PostWrapper
+        public class CommentWrapper
         {
-            [JsonPropertyName("post")]
-            public PostData PostData { get; set; }
+            [JsonPropertyName("comment")]
+            public Comment CommentData { get; set; }
 
             [JsonPropertyName("creator")]
             public Creator Creator { get; set; }
 
+            [JsonPropertyName("post")]
+            public Post Post { get; set; }
+
             [JsonPropertyName("community")]
             public Community Community { get; set; }
 
-            [JsonPropertyName("creator_banned_from_community")]
-            public bool CreatorBannedFromCommunity { get; set; }
-
             [JsonPropertyName("counts")]
             public Counts Counts { get; set; }
+
+            [JsonPropertyName("creator_banned_from_community")]
+            public bool CreatorBannedFromCommunity { get; set; }
 
             [JsonPropertyName("subscribed")]
             public string Subscribed { get; set; }
@@ -36,17 +39,53 @@ namespace LemmyModBot.ResponseModels
             [JsonPropertyName("saved")]
             public bool Saved { get; set; }
 
-            [JsonPropertyName("read")]
-            public bool Read { get; set; }
-
             [JsonPropertyName("creator_blocked")]
             public bool CreatorBlocked { get; set; }
 
             [JsonPropertyName("my_vote")]
-            public int? MyVote { get; set; }
+            public object MyVote { get; set; }
+        }
 
-            [JsonPropertyName("unread_comments")]
-            public int UnreadComments { get; set; }
+        public class Comment
+        {
+            [JsonPropertyName("id")]
+            public int Id { get; set; }
+
+            [JsonPropertyName("creator_id")]
+            public int CreatorId { get; set; }
+
+            [JsonPropertyName("post_id")]
+            public int PostId { get; set; }
+
+            [JsonPropertyName("content")]
+            public string Content { get; set; }
+
+            [JsonPropertyName("removed")]
+            public bool Removed { get; set; }
+
+            [JsonPropertyName("published")]
+            public DateTime Published { get; set; }
+
+            [JsonPropertyName("updated")]
+            public object Updated { get; set; }
+
+            [JsonPropertyName("deleted")]
+            public bool Deleted { get; set; }
+
+            [JsonPropertyName("ap_id")]
+            public string ApId { get; set; }
+
+            [JsonPropertyName("local")]
+            public bool Local { get; set; }
+
+            [JsonPropertyName("path")]
+            public string Path { get; set; }
+
+            [JsonPropertyName("distinguished")]
+            public bool Distinguished { get; set; }
+
+            [JsonPropertyName("language_id")]
+            public int LanguageId { get; set; }
         }
 
         public class Creator
@@ -61,13 +100,13 @@ namespace LemmyModBot.ResponseModels
             public object DisplayName { get; set; }
 
             [JsonPropertyName("avatar")]
-            public object Avatar { get; set; }
+            public string Avatar { get; set; }
 
             [JsonPropertyName("banned")]
             public bool Banned { get; set; }
 
             [JsonPropertyName("published")]
-            public string Published { get; set; }
+            public DateTime Published { get; set; }
 
             [JsonPropertyName("updated")]
             public object Updated { get; set; }
@@ -102,13 +141,11 @@ namespace LemmyModBot.ResponseModels
             [JsonPropertyName("bot_account")]
             public bool BotAccount { get; set; }
 
-            [JsonPropertyName("ban_expires")]
-            public object BanExpires { get; set; }
-
-            [JsonPropertyName("instance_id")]
-            public int InstanceId { get; set; }
+            [JsonPropertyName("ban_record")]
+            public object BanRecord { get; set; }
         }
-        public class PostData
+
+        public class Post
         {
             [JsonPropertyName("id")]
             public int Id { get; set; }
@@ -135,10 +172,10 @@ namespace LemmyModBot.ResponseModels
             public bool Locked { get; set; }
 
             [JsonPropertyName("published")]
-            public string Published { get; set; }
+            public DateTime Published { get; set; }
 
             [JsonPropertyName("updated")]
-            public object Updated { get; set; }
+            public DateTime Updated { get; set; }
 
             [JsonPropertyName("deleted")]
             public bool Deleted { get; set; }
@@ -147,10 +184,10 @@ namespace LemmyModBot.ResponseModels
             public bool Nsfw { get; set; }
 
             [JsonPropertyName("embed_title")]
-            public string EmbedTitle { get; set; }
+            public object EmbedTitle { get; set; }
 
             [JsonPropertyName("embed_description")]
-            public string EmbedDescription { get; set; }
+            public object EmbedDescription { get; set; }
 
             [JsonPropertyName("embed_video_url")]
             public object EmbedVideoUrl { get; set; }
@@ -192,10 +229,10 @@ namespace LemmyModBot.ResponseModels
             public bool Removed { get; set; }
 
             [JsonPropertyName("published")]
-            public string Published { get; set; }
+            public DateTime Published { get; set; }
 
             [JsonPropertyName("updated")]
-            public string Updated { get; set; }
+            public DateTime Updated { get; set; }
 
             [JsonPropertyName("deleted")]
             public bool Deleted { get; set; }
@@ -246,13 +283,13 @@ namespace LemmyModBot.ResponseModels
             public int Downvotes { get; set; }
 
             [JsonPropertyName("published")]
-            public string Published { get; set; }
+            public DateTime Published { get; set; }
 
             [JsonPropertyName("newest_comment_time_necro")]
-            public string NewestCommentTimeNecro { get; set; }
+            public DateTime NewestCommentTimeNecro { get; set; }
 
             [JsonPropertyName("newest_comment_time")]
-            public string NewestCommentTime { get; set; }
+            public DateTime NewestCommentTime { get; set; }
 
             [JsonPropertyName("featured_community")]
             public bool FeaturedCommunity { get; set; }
@@ -265,6 +302,6 @@ namespace LemmyModBot.ResponseModels
 
             [JsonPropertyName("hot_rank_active")]
             public int HotRankActive { get; set; }
-        }        
+        }
     }
 }

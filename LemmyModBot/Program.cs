@@ -36,7 +36,7 @@ namespace LemmyModBot
             var lemmyUser = builder.Configuration.GetValue<string>("LemmyUsername");
             var lemmyPassword = builder.Configuration.GetValue<string>("LemmyPassword");
 
-            var connection = new ApiConnection(lemmyUrl);
+            var connection = new WebsocketApiConnection(lemmyUrl);
             connection.Login(lemmyUser, lemmyPassword);
 
             var moderationTasks = new ModerationTaskFactory(builder.Configuration).GetModerationTasks();
@@ -55,7 +55,7 @@ namespace LemmyModBot
 
                 var endTime = DateTime.UtcNow;
                 var secondsSpent = (endTime - startTime).TotalSeconds;
-                Thread.Sleep(pollingDelay-(int)(secondsSpent>0?secondsSpent:0)*1000);
+                Thread.Sleep((pollingDelay-(int)(secondsSpent>0?secondsSpent:0))*1000);
             }         
  
             Console.WriteLine("Goodbye, World!");

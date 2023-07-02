@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static LemmyModBot.ResponseModels.GetPostsResponse;
+using static System.Collections.Specialized.BitVector32;
 
 namespace LemmyModBot.ModerationTasks
 {
@@ -18,31 +19,25 @@ namespace LemmyModBot.ModerationTasks
 
         public ConfigurationManager ConfigurationManager { get; }
 
-        public Dictionary<Community,ModerationTaskBase> GetModerationTasks()
+        public Dictionary<CommunityIdentifier, List<ModerationTaskBase>> GetModerationTasks()
         {
             var config = new Communities();
             ConfigurationManager.Bind("Communities", config);
 
-            if(config.List == null || !config.List.Any())
+            if (config.List == null || !config.List.Any())
             {
-                return new Dictionary<Community, ModerationTaskBase>();
+                return new Dictionary<CommunityIdentifier, List<ModerationTaskBase>>();
             }
 
-            var communitySettingsList = new Dictionary<Community,ModerationTaskBase>();                       
+            var communitySettingsList = new Dictionary<CommunityIdentifier, List<ModerationTaskBase>>();
 
-            foreach(var communityConfigItem in config.List)
+            foreach (var communityConfigItem in config.List)
             {
-                var community = new Community(communityConfigItem.Name);
+                var community = new CommunityIdentifier(communityConfigItem.Name);
                 var moderationTasks = communityConfigItem.Tasks.Where(t => t.Active).Select(t => GetTask(t)).ToList();
 
-                if (moderationTasks.Count == 1)
-                {
-                    communitySettingsList.Add(community, moderationTasks[0]);
-                }
-                else
-                {
-                    communitySettingsList.Add(community, new CompositeModerationTask(moderationTasks));
-                }
+                communitySettingsList.Add(community, moderationTasks);
+
             }
 
             return communitySettingsList;
@@ -50,11 +45,40 @@ namespace LemmyModBot.ModerationTasks
 
         private ModerationTaskBase GetTask(CommunityModTask modTaskConfig)
         {
-            switch (modTaskConfig.Name) {
+            switch (modTaskConfig.Name)
+            {
                 case "RequireTag":
-                    return new RequireTag();
+                    return new RequireTag(modTaskConfig.Active, ParseContentType(modTaskConfig.ContentType), ParseModerationAction(modTaskConfig.Action));
                 default:
                     throw new NotImplementedException($"{modTaskConfig.Name} not implemented.");
+            }
+        }
+
+        private ModerationAction ParseModerationAction(string action)
+        {
+            switch(action)
+            {
+                case "AddComment":
+                    return ModerationAction.Comment;
+                case "Remove":
+                    return ModerationAction.Remove;
+                default:
+                    throw new ArgumentException($"{action} is not supported.");
+            }
+        }
+
+        private UserContentType ParseContentType(string contentType)
+        {
+            switch (contentType)
+            {
+                case "Post":
+                    return UserContentType.Post;
+                case "Comment":
+                    return UserContentType.Comment;
+                case "PostsAndComments":
+                    return UserContentType.PostsAndComments;
+                default:
+                    throw new ArgumentException($"{contentType} is not supported.");
             }
         }
     }

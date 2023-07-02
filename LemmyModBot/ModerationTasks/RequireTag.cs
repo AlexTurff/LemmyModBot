@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LemmyModBot.ModerationTasks
 {
-    internal class RequireTag : ModerationTaskBase, IModerationSettings
+    internal class RequireTag : ModerationTaskBase
     {
 
         public RequireTag(bool active, UserContentType contentType, ModerationAction action)
@@ -17,12 +17,12 @@ namespace LemmyModBot.ModerationTasks
             Action = action;
         }
 
-        public bool Active { get; }
+        public override bool Active { get; }
 
-        public UserContentType ContentType { get; }
+        public override UserContentType ContentType { get; }
 
-        public ModerationAction Action { get; }
+        public override ModerationAction Action { get; }
 
-        public string Name => "RequireTag";
+        public override string Name => "RequireTag";
     }
 }

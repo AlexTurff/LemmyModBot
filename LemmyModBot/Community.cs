@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace LemmyModBot
 {
-    internal class Community
+    internal class CommunityIdentifier
     {
-        public Community(string communityName)
+        public CommunityIdentifier(string communityName)
         {
             CommunityName = communityName;
         }

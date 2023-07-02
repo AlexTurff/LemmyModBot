@@ -12,9 +12,9 @@ using Websocket.Client;
 
 namespace LemmyModBot
 {
-    public class ApiConnection : IDisposable
+    public class WebsocketApiConnection : IDisposable, IApiConnection
     {
-        public ApiConnection(string url)
+        public WebsocketApiConnection(string url)
         {
             Url = url;
         }
@@ -26,7 +26,7 @@ namespace LemmyModBot
         private WebsocketClient Connection { get; set; }
         private string JwtToken { get; set; }
 
-        
+
 
         public void Login(string username, string password)
         {
@@ -57,11 +57,11 @@ namespace LemmyModBot
 
                 JwtToken = jwtToken;
 
-                Connect();  
+                Connect();
             }
         }
 
-        public TResponse SendRequest<TRequest,TResponse>(ApiOperation<TRequest> request) where TRequest : RequestBase, new()
+        public TResponse SendRequest<TRequest, TResponse>(ApiOperation<TRequest> request) where TRequest : RequestBase, new()
         {
             request.Data.Jwt = JwtToken;
             var message = JsonSerializer.Serialize(request);
