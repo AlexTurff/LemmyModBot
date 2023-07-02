@@ -21,21 +21,21 @@ namespace LemmyModBot.RequestModels
 
 
         [JsonPropertyName("community_name")]
-        private  string Community { get; set; }
+        public string Community { get; set; }
 
         [JsonPropertyName("page")]
-        private  int Page { get; set; }
+        public int Page { get; set; }
 
         [JsonPropertyName("limit")]
-        private  int Limit { get; set; }
+        public int Limit { get; set; }
 
         [JsonPropertyName("sort")]
-        private  string Sort { get; set; }
+        public string Sort { get; set; }
 
         [JsonPropertyName("type")]
-        private  string Type { get; set; }
+        public string Type { get; set; }
 
         [JsonPropertyName("saved_only")]
-        private  bool SavedOnly { get; set; }
+        public bool SavedOnly { get; set; }
     }
 }

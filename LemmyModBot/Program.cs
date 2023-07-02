@@ -8,6 +8,7 @@ using System.Text;
 using Websocket.Client;
 using LemmyModBot.RequestModels;
 using LemmyModBot.ResponseModels;
+using LemmyModBot.ModerationTasks;
 
 namespace LemmyModBot
 {
@@ -16,7 +17,6 @@ namespace LemmyModBot
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
-
 
             HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
@@ -30,23 +30,33 @@ namespace LemmyModBot
 
             using IHost host = builder.Build();
 
-            // Application code should start here.
-
             host.RunAsync();
 
             var lemmyUrl = builder.Configuration.GetValue<string>("LemmyApiHost");
-
-            var connection = new ApiConnection(lemmyUrl);
-
             var lemmyUser = builder.Configuration.GetValue<string>("LemmyUsername");
             var lemmyPassword = builder.Configuration.GetValue<string>("LemmyPassword");
 
+            var connection = new ApiConnection(lemmyUrl);
             connection.Login(lemmyUser, lemmyPassword);
 
-            var response = connection.SendRequest<GetPostsRequest, GetPostsResponse>(
-                new ApiOperation<GetPostsRequest>() 
-                    { Operation = GetPostsRequest.OperationName, Data = new GetPostsRequest("imaginarycosmere", 1) });    
+            var moderationTasks = new ModerationTaskFactory(builder.Configuration).GetModerationTasks();
+            var moderationRunner = new ModerationRunner(connection, moderationTasks);
 
+            var cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = cancellationTokenSource.Token;
+            var pollingDelay = builder.Configuration.GetValue<int>("PollDelaySeconds");
+
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var startTime = DateTime.UtcNow;
+
+                moderationRunner.Run();
+
+                var endTime = DateTime.UtcNow;
+                var secondsSpent = (endTime - startTime).TotalSeconds;
+                Thread.Sleep(pollingDelay-(int)(secondsSpent>0?secondsSpent:0)*1000);
+            }         
  
             Console.WriteLine("Goodbye, World!");
 
