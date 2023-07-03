@@ -9,11 +9,16 @@ using Websocket.Client;
 using LemmyModBot.RequestModels;
 using LemmyModBot.ResponseModels;
 using LemmyModBot.ModerationTasks;
+using LemmyModBot.ModerationTasks.ModerationActions;
 
 namespace LemmyModBot
 {
     internal class Program
     {
+        //todo replace these with proper dependency injection framework?
+        public static ModerationActionFactory ModerationActionFactory { get; set; }
+        public static ModerationTaskFactory ModerationTaskFactory { get; set; }
+
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
@@ -39,7 +44,10 @@ namespace LemmyModBot
             var connection = new WebsocketApiConnection(lemmyUrl);
             connection.Login(lemmyUser, lemmyPassword);
 
-            var moderationTasks = new ModerationTaskFactory(builder.Configuration).GetModerationTasks();
+            ModerationTaskFactory = new ModerationTaskFactory(builder.Configuration);
+            ModerationActionFactory = new ModerationActionFactory(connection);
+
+            var moderationTasks = ModerationTaskFactory.GetModerationTasks();
             var moderationRunner = new ModerationRunner(connection, moderationTasks);
 
             var cancellationTokenSource = new CancellationTokenSource();
@@ -55,7 +63,7 @@ namespace LemmyModBot
 
                 var endTime = DateTime.UtcNow;
                 var secondsSpent = (endTime - startTime).TotalSeconds;
-                Thread.Sleep((pollingDelay-(int)(secondsSpent>0?secondsSpent:0))*1000);
+                Thread.Sleep(pollingDelay);
             }         
  
             Console.WriteLine("Goodbye, World!");

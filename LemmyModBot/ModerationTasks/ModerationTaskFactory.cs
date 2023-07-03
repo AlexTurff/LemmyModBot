@@ -1,4 +1,5 @@
 ﻿using LemmyModBot.Configuration;
+using LemmyModBot.ModerationTasks.ModerationActions;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -48,23 +49,32 @@ namespace LemmyModBot.ModerationTasks
             switch (modTaskConfig.Name)
             {
                 case "RequireTag":
-                    return new RequireTag(modTaskConfig.Active, ParseContentType(modTaskConfig.ContentType), ParseModerationAction(modTaskConfig.Action));
+                    return new RequireTag(modTaskConfig.Active, ParseContentType(modTaskConfig.ContentType), ParseModerationActions(modTaskConfig.Actions));
                 default:
                     throw new NotImplementedException($"{modTaskConfig.Name} not implemented.");
             }
         }
 
-        private ModerationAction ParseModerationAction(string action)
+        private List<ModerationAction> ParseModerationActions(List<string> actions)
         {
-            switch(action)
+            var parsedActionsList = new List<ModerationAction>();
+
+            foreach (var action in actions)
             {
-                case "AddComment":
-                    return ModerationAction.Comment;
-                case "Remove":
-                    return ModerationAction.Remove;
-                default:
-                    throw new ArgumentException($"{action} is not supported.");
+                switch (action)
+                {
+                    case "AddComment":
+                        parsedActionsList.Add(ModerationAction.Comment);
+                        break;
+                    case "Remove":
+                        parsedActionsList.Add(ModerationAction.Remove);
+                        break;
+                    default:
+                        throw new ArgumentException($"{action} is not supported.");
+                }
             }
+
+            return parsedActionsList;
         }
 
         private UserContentType ParseContentType(string contentType)
