@@ -16,8 +16,9 @@ namespace LemmyModBot.RequestModels
         }
 
 
-        [JsonIgnore]
-        public static string OperationName = "Login";
+        public string OperationRoute => "/login";
+
+        public HttpMethod Operation => HttpMethod.Post;
 
         [JsonPropertyName("username_or_email")]
         public string UserIdentifier { get; set; }

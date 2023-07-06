@@ -1,6 +1,6 @@
 ﻿namespace LemmyModBot.Configuration
 {
-    public class CommunityModSetting
+    internal class CommunityModSetting
     {
         public string Name { get; set; }
         public List<CommunityModTask> Tasks { get; set; }

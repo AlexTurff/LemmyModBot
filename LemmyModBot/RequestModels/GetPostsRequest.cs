@@ -5,19 +5,20 @@ namespace LemmyModBot.RequestModels
     public class GetPostsRequest : RequestBase
     {
         public GetPostsRequest() { }
-        public GetPostsRequest(string community, int page, int limit = 40, string sort = "Active", string type = "All", bool savedOnly = false)
+        public GetPostsRequest(string community, int page, int limit = 40, string sort = "Active", string type = "All")
         {
             this.Community = community;
             this.Page = page;
             this.Limit = limit;
             this.Sort = sort;
             this.Type = type;
-            this.SavedOnly = savedOnly;
+            //this.SavedOnly = savedOnly;
         }
 
 
-        [JsonIgnore]
-        public static string OperationName = "GetPosts";      
+        public override string OperationRoute => "/post/list";
+
+        public override HttpMethod Operation => HttpMethod.Get;
 
 
         [JsonPropertyName("community_name")]
@@ -35,7 +36,7 @@ namespace LemmyModBot.RequestModels
         [JsonPropertyName("type")]
         public string Type { get; set; }
 
-        [JsonPropertyName("saved_only")]
-        public bool SavedOnly { get; set; }
+        //[JsonPropertyName("saved_only")]
+        //public bool SavedOnly { get; set; }
     }
 }

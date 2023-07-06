@@ -1,4 +1,5 @@
-﻿using LemmyModBot.ModerationTasks.ModerationActions;
+﻿using LemmyModBot.Configuration;
+using LemmyModBot.ModerationTasks.ModerationActions;
 using LemmyModBot.ResponseModels;
 using System;
 using System.Collections.Generic;
@@ -13,13 +14,14 @@ namespace LemmyModBot.ModerationTasks
     internal class RequireTag : ModerationTaskBase
     {
 
-        public RequireTag(bool active, UserContentType contentType, List<ModerationAction> actions)
+        public RequireTag(CommunityModTask modTaskDetails)
         {
-            Active = active;
-            ContentType = contentType;
-            Actions = actions;
+            Active = modTaskDetails.Active;
+            ContentType = modTaskDetails.ParseContentType();
+            Actions = modTaskDetails.ParseModerationActions();
 
-            ActionJobs = Actions.Select(a => Program.ModerationActionFactory.GetAction(a)).ToList();
+            ActionJobs = Actions.Select(a => Program.ModerationActionFactory.GetAction(a, modTaskDetails)).ToList();
+            ModTaskDetails = modTaskDetails;
         }
 
         public override bool Active { get; }
@@ -27,9 +29,12 @@ namespace LemmyModBot.ModerationTasks
         public override UserContentType ContentType { get; }
 
         public override List<ModerationAction> Actions { get; }
-        private List<IModerationAction> ActionJobs { get; }
 
         public override string Name => "RequireTag";
+
+        private List<IModerationAction> ActionJobs { get; }
+
+        private CommunityModTask ModTaskDetails { get; }
 
         private static Regex TagRegex = new Regex("^\\[.*\\].*$");
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LemmyModBot.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ namespace LemmyModBot.ModerationTasks.ModerationActions
 
         public IApiConnection Connection { get; }
 
-        public IModerationAction GetAction(ModerationAction action)
+        public IModerationAction GetAction(ModerationAction action, CommunityModTask modTaskDetails)
         {
             switch (action)
             {
@@ -24,7 +25,7 @@ namespace LemmyModBot.ModerationTasks.ModerationActions
                 case ModerationAction.Remove:
                     throw new NotImplementedException();
                 case ModerationAction.Comment:
-                    return new AddComment(Connection);
+                    return new AddComment(Connection, modTaskDetails);
                default: throw new NotImplementedException();
             }
         }

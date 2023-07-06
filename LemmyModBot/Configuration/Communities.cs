@@ -1,6 +1,6 @@
 ﻿namespace LemmyModBot.Configuration
 {
-    public class Communities
+    internal class Communities
     {
         public List<CommunityModSetting> List { get; set; }
     }

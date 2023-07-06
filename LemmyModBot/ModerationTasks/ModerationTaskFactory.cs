@@ -49,47 +49,10 @@ namespace LemmyModBot.ModerationTasks
             switch (modTaskConfig.Name)
             {
                 case "RequireTag":
-                    return new RequireTag(modTaskConfig.Active, ParseContentType(modTaskConfig.ContentType), ParseModerationActions(modTaskConfig.Actions));
+                    return new RequireTag(modTaskConfig);
                 default:
                     throw new NotImplementedException($"{modTaskConfig.Name} not implemented.");
             }
-        }
-
-        private List<ModerationAction> ParseModerationActions(List<string> actions)
-        {
-            var parsedActionsList = new List<ModerationAction>();
-
-            foreach (var action in actions)
-            {
-                switch (action)
-                {
-                    case "AddComment":
-                        parsedActionsList.Add(ModerationAction.Comment);
-                        break;
-                    case "Remove":
-                        parsedActionsList.Add(ModerationAction.Remove);
-                        break;
-                    default:
-                        throw new ArgumentException($"{action} is not supported.");
-                }
-            }
-
-            return parsedActionsList;
-        }
-
-        private UserContentType ParseContentType(string contentType)
-        {
-            switch (contentType)
-            {
-                case "Post":
-                    return UserContentType.Post;
-                case "Comment":
-                    return UserContentType.Comment;
-                case "PostsAndComments":
-                    return UserContentType.PostsAndComments;
-                default:
-                    throw new ArgumentException($"{contentType} is not supported.");
-            }
-        }
+        }        
     }
 }

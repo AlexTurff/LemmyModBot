@@ -1,4 +1,5 @@
-﻿using LemmyModBot.RequestModels;
+﻿using LemmyModBot.Configuration;
+using LemmyModBot.RequestModels;
 using LemmyModBot.ResponseModels;
 using System;
 using System.Collections.Generic;
@@ -10,11 +11,13 @@ namespace LemmyModBot.ModerationTasks.ModerationActions
 {
     internal class AddComment : IModerationAction
     {
-        private IApiConnection connection;
+        private readonly IApiConnection connection;
+        private readonly CommunityModTask modTaskDetails;
 
-        public AddComment(IApiConnection connection)
+        public AddComment(IApiConnection connection, Configuration.CommunityModTask modTaskDetails)
         {
             this.connection = connection;
+            this.modTaskDetails = modTaskDetails;
         }
 
         public void ActionComment(GetCommentsResponse.CommentWrapper comment)
@@ -24,11 +27,8 @@ namespace LemmyModBot.ModerationTasks.ModerationActions
 
         public void ActionPost(GetPostsResponse.PostWrapper post)
         {
-            connection.SendRequest<CreateCommentRequest, CreateCommentResponse>(new ApiOperation<CreateCommentRequest>()
-            {
-                Operation = CreateCommentRequest.OperationName,
-                Data = new CreateCommentRequest("Please can you edit your port title to add a [Tag] that indicates the spoiler range for the post", post.PostData.Id, null)
-            });
+            connection.SendRequest<CreateCommentRequest,CreateCommentResponse>(
+                new CreateCommentRequest(modTaskDetails.Comment, post.PostData.Id, null));
         }
     } 
 }

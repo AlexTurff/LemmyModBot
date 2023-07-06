@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LemmyModBot.RequestModels
 {
-    internal class CreateCommentRequest: RequestBase
+    internal class CreateCommentRequest : RequestBase
     {
         public CreateCommentRequest() { }
         public CreateCommentRequest(string content, int postId, int? parentCommentId)
@@ -19,9 +19,9 @@ namespace LemmyModBot.RequestModels
            
         }
 
+        public override string OperationRoute => "/comment";
 
-        [JsonIgnore]
-        public static string OperationName = "CreateComment";
+        public override HttpMethod Operation => HttpMethod.Post;
 
 
         [JsonPropertyName("content")]

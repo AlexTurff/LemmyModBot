@@ -31,7 +31,8 @@ namespace LemmyModBot
 
             builder.Configuration
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
+                .AddUserSecrets<Program>();
 
             using IHost host = builder.Build();
 
@@ -41,7 +42,7 @@ namespace LemmyModBot
             var lemmyUser = builder.Configuration.GetValue<string>("LemmyUsername");
             var lemmyPassword = builder.Configuration.GetValue<string>("LemmyPassword");
 
-            var connection = new WebsocketApiConnection(lemmyUrl);
+            var connection = new HttpApiConnection(lemmyUrl);
             connection.Login(lemmyUser, lemmyPassword);
 
             ModerationTaskFactory = new ModerationTaskFactory(builder.Configuration);
@@ -63,7 +64,7 @@ namespace LemmyModBot
 
                 var endTime = DateTime.UtcNow;
                 var secondsSpent = (endTime - startTime).TotalSeconds;
-                Thread.Sleep(pollingDelay);
+                Thread.Sleep(pollingDelay*1000);
             }         
  
             Console.WriteLine("Goodbye, World!");
