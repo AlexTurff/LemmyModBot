@@ -2,10 +2,10 @@
 
 namespace LemmyModBot.RequestModels
 {
-    public class GetCommentsRequest : RequestBase
+    public class GetPostCommentsRequest : RequestBase
     {
-        public GetCommentsRequest() { }
-        public GetCommentsRequest(int postId, int maxDepth, string sort = "New", string type = "All")
+        public GetPostCommentsRequest() { }
+        public GetPostCommentsRequest(int postId, int maxDepth, string sort = "New", string type = "All")
         {
             PostId = postId;
             MaxDepth = maxDepth;
