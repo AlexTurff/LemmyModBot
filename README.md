@@ -58,25 +58,25 @@ Example Config:
 	"Communities": {
 		"List": [
 			{
-				"Name": "botdevmeta",
+				"Name": "exampleCommunityName",
 				"Tasks": [
 					{
 						"Name": "RequireTag",
 						"ContentType": "PostTitle",
 						"Active": true,
 						"Actions": [ "AddComment", MessageUser, Report, Remove ],
-						"Comment": "Please edit its title to include a tag such as [No Spoilers], [Oathbringer] or [Warbreaker] etc to indicate the level of spoilers expected within.",
+						"Comment": "Please edit its title to include a tag such as [No Spoilers], [Spoiler] etc to indicate the level of spoilers expected within.",
 						"ReportOrRemoveComment": "Post missing spoiler tag.",
-						"PrivateMessageContent": "One of your posts is missing a spoiler [tag], please edit its title to include a tag such as [No Spoilers], [Oathbringer] or [Warbreaker] etc to indicate the level of spoilers expected within."
+						"PrivateMessageContent": "One of your posts is missing a spoiler [tag], please edit its title to include a tag such as [No Spoilers], [Spoiler] etc to indicate the level of spoilers expected within."
 					},
 					{
 						"Name": "MatchesRegex",
 						"ContentType": "Comment",
 						"Active": true,
 						"Actions": [ "AddComment" ],
-						"Comment": "Fuck Moash!",
-						"RegularExpression": "(Moash|moash)",
-						"OnlyActionIfPostTitleMatchRegex": "\\[(Oathbringer|oathbringer|OB|Ob|ob|Rhythm of War|Rhythm Of War|RoW|ROW)\\]"
+						"Comment": "GNU Terry Pratchett",
+						"RegularExpression": "Terry Pratchett",
+						"OnlyActionIfPostTitleMatchRegex": "\\[(TP|Terry Pratchett)\\]"
 					},
 					{
 						"Name": "RequireSpoilersIfTagged",
