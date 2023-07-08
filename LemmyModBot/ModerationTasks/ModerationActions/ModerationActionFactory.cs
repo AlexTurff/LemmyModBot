@@ -16,6 +16,7 @@ namespace LemmyModBot.ModerationTasks.ModerationActions
 
         public IApiConnection Connection { get; }
 
+        //TODO switch me to reflection too?
         public IModerationAction GetAction(ModerationAction action, CommunityModTask modTaskDetails)
         {
             switch (action)
@@ -23,10 +24,14 @@ namespace LemmyModBot.ModerationTasks.ModerationActions
                 case ModerationAction.None:
                     return null;
                 case ModerationAction.Remove:
-                    throw new NotImplementedException();
+                    return new Remove(Connection, modTaskDetails);
                 case ModerationAction.Comment:
                     return new AddComment(Connection, modTaskDetails);
-               default: throw new NotImplementedException();
+                case ModerationAction.Report:
+                    return new Report(Connection, modTaskDetails);
+                case ModerationAction.UserMessage:
+                    return new MessageUser(Connection, modTaskDetails);
+                default: throw new NotImplementedException();
             }
         }
     }

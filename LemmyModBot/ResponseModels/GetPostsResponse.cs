@@ -116,9 +116,6 @@ namespace LemmyModBot.ResponseModels
             [JsonPropertyName("name")]
             public string Name { get; set; }
 
-            [JsonPropertyName("url")]
-            public string Url { get; set; }
-
             [JsonPropertyName("body")]
             public string Body { get; set; }
 
@@ -137,26 +134,11 @@ namespace LemmyModBot.ResponseModels
             [JsonPropertyName("published")]
             public string Published { get; set; }
 
-            [JsonPropertyName("updated")]
-            public object Updated { get; set; }
-
             [JsonPropertyName("deleted")]
             public bool Deleted { get; set; }
 
             [JsonPropertyName("nsfw")]
-            public bool Nsfw { get; set; }
-
-            [JsonPropertyName("embed_title")]
-            public string EmbedTitle { get; set; }
-
-            [JsonPropertyName("embed_description")]
-            public string EmbedDescription { get; set; }
-
-            [JsonPropertyName("embed_video_url")]
-            public object EmbedVideoUrl { get; set; }
-
-            [JsonPropertyName("thumbnail_url")]
-            public string ThumbnailUrl { get; set; }
+            public bool Nsfw { get; set; }           
 
             [JsonPropertyName("ap_id")]
             public string ApId { get; set; }

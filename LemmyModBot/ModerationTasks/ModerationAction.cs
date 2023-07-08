@@ -4,6 +4,8 @@
     {
         None,
         Remove,
+        Report,
         Comment,
+        UserMessage
     }
 }

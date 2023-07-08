@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using static LemmyModBot.ResponseModels.GetPostsResponse;
@@ -46,13 +48,23 @@ namespace LemmyModBot.ModerationTasks
 
         private ModerationTaskBase GetTask(CommunityModTask modTaskConfig)
         {
-            switch (modTaskConfig.Name)
+            var taskClasses = Assembly.GetExecutingAssembly().GetTypes().Where(t=> t.IsSubclassOf(typeof(ModerationTaskBase)));
+
+            var taskClass = taskClasses.FirstOrDefault(t=> t.Name == modTaskConfig.Name);
+
+            if (taskClass == null)
             {
-                case "RequireTag":
-                    return new RequireTag(modTaskConfig);
-                default:
-                    throw new NotImplementedException($"{modTaskConfig.Name} not implemented.");
+                throw new NotImplementedException($"{modTaskConfig.Name} not implemented.");
             }
+
+            var taskObject = (ModerationTaskBase)Activator.CreateInstance(taskClass, modTaskConfig);
+
+            if (!string.IsNullOrWhiteSpace(modTaskConfig.OnlyActionIfPostTitleMatchRegex))
+            {
+                return new PostTitleFilterRegexDecorator(taskObject, modTaskConfig);
+            }
+
+            return taskObject;           
         }        
     }
 }

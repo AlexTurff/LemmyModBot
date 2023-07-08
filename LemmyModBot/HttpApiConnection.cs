@@ -28,6 +28,7 @@ namespace LemmyModBot
         private static Logger Logger = LogManager.GetCurrentClassLogger();
 
         public string Url { get; }
+        public string Username { get; private set; }
         private HttpClient HttpClient { get; }
         private string JwtToken { get; set; }
 
@@ -35,6 +36,7 @@ namespace LemmyModBot
 
         public void Login(string username, string password)
         {
+            Username = username;
             var message = new HttpRequestMessage(HttpMethod.Post, new Uri(Url.TrimEnd('/') +"/user/login"));
             message.Content = JsonContent.Create(new LoginRequest(username, password),typeof(LoginRequest));
             
@@ -55,40 +57,48 @@ namespace LemmyModBot
             else { throw new Exception("Failed to Login - " + response.StatusCode); }
         }
 
-        public TResponse SendRequest<TRequest,TResponse>(RequestBase request) where TRequest : RequestBase
+        public TResponse? SendRequest<TRequest,TResponse>(TRequest request) where TRequest : RequestBase
         {
-            request.Jwt = JwtToken;
-
-            var message = new HttpRequestMessage(request.Operation, new Uri(Url.TrimEnd('/')+request.OperationRoute));
-
-            if(request.Operation == HttpMethod.Get) {
-                var urlEncodedString = string.Join("&", typeof(TRequest).GetProperties()
-                    .Where(p => p.GetCustomAttribute<JsonPropertyNameAttribute>() != null)
-                    .Select(property => property.GetCustomAttribute<JsonPropertyNameAttribute>().Name + "=" + HttpUtility.UrlEncode(property.GetValue(request).ToString()))
-                    .ToArray());
-                    //
-                
-                message.RequestUri = new Uri(message.RequestUri.AbsoluteUri + "?" + urlEncodedString);
-            }
-            else {
-                var messageText = JsonSerializer.Serialize(request);
-                message.Content = JsonContent.Create(request, typeof(TRequest));
-            }            
-
-            //todo try catch me
-            var response = HttpClient.Send(message);
-
-            if (response != null && response.IsSuccessStatusCode && response.Content != null)
+            try
             {
-                var readResponseTask = response.Content.ReadAsStringAsync();
-                readResponseTask.Wait();
-                var responseObject = JsonSerializer.Deserialize<TResponse>(readResponseTask.Result);
+                request.Jwt = JwtToken;
 
-                return responseObject;
+                var message = new HttpRequestMessage(request.Operation, new Uri(Url.TrimEnd('/') + request.OperationRoute));
+
+                if (request.Operation == HttpMethod.Get)
+                {
+                    var urlEncodedString = string.Join("&", typeof(TRequest).GetProperties()
+                        .Where(p => p.GetCustomAttribute<JsonPropertyNameAttribute>() != null)
+                        .Select(property => property.GetCustomAttribute<JsonPropertyNameAttribute>().Name + "=" + HttpUtility.UrlEncode(property.GetValue(request).ToString()))
+                        .ToArray());
+                    //
+
+                    message.RequestUri = new Uri(message.RequestUri.AbsoluteUri + "?" + urlEncodedString);
+                }
+                else
+                {
+                    var messageText = JsonSerializer.Serialize<TRequest>(request);
+                    message.Content = JsonContent.Create(request, typeof(TRequest));
+                }
+
+                //todo try catch me
+                var response = HttpClient.Send(message);
+
+                if (response != null && response.IsSuccessStatusCode && response.Content != null)
+                {
+                    var readResponseTask = response.Content.ReadAsStringAsync();
+                    readResponseTask.Wait();
+                    var responseObject = JsonSerializer.Deserialize<TResponse>(readResponseTask.Result);
+
+                    return responseObject;
+                }
+                //todo logging
+                else { throw new Exception("Error - " + response.StatusCode + " " + response.RequestMessage + " " + response.Content); }
             }
-            //todo logging
-            else { throw new Exception("Error - " + response.StatusCode); }
-
+            catch (Exception ex) { 
+                Logger.Error(ex);
+                return default;
+            }        
         }       
 
         public void Dispose()

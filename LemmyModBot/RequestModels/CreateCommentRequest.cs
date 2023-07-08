@@ -19,8 +19,10 @@ namespace LemmyModBot.RequestModels
            
         }
 
+        [JsonIgnore]
         public override string OperationRoute => "/comment";
 
+        [JsonIgnore]
         public override HttpMethod Operation => HttpMethod.Post;
 
 

@@ -16,8 +16,10 @@ namespace LemmyModBot.RequestModels
             Reason = reason ?? throw new ArgumentNullException(nameof(reason));
         }
 
+        [JsonIgnore]
         public override string OperationRoute => "/comment/remove";
 
+        [JsonIgnore]
         public override HttpMethod Operation => HttpMethod.Post;
 
         [JsonPropertyName("comment_id")]

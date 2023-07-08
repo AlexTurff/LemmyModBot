@@ -42,10 +42,10 @@ namespace LemmyModBot
                 LastPostQueryPerCommunity[community.CommunityName] = DateTime.UtcNow;
                 var posts = connection.SendRequest<GetPostsRequest, GetPostsResponse>(new GetPostsRequest(community.CommunityName, 1, 40, "New"));
 
-                foreach (var task in modTasks.Where(t => t.ContentType.HasFlag(UserContentType.Post)))
+                foreach (var task in modTasks.Where(t => t.ContentType.HasFlag(UserContentType.PostBody) || t.ContentType.HasFlag(UserContentType.PostTitle)))
                 {
                     //todo update model to DateTIme?
-                    foreach (var post in posts.Posts.Where(p => DateTime.Parse(p.PostData.Published) >= postQueryComparisonTime))
+                    foreach (var post in posts.Posts.Where(p => DateTime.Parse(p.PostData.Published) >= postQueryComparisonTime && p.Creator.Name != connection.Username))
                     {
                         task.ValidatePost(post);
                     }
@@ -58,15 +58,15 @@ namespace LemmyModBot
 
                     var comments = new List<GetCommentsResponse.CommentWrapper>();
                     var commentsResponse = connection.SendRequest<GetCommunityCommentsRequest, GetCommentsResponse>(new GetCommunityCommentsRequest(community.CommunityName, 1, "New"));
-                    comments.AddRange(commentsResponse.Comments);
+                    comments.AddRange(commentsResponse.Comments.Where(c =>  c.Creator.Name != connection.Username));
 
                     int counter = 2;
                     while (comments.Last().CommentData.Published >= commentQueryComparisonTime)
                     {
                         commentsResponse = connection.SendRequest<GetCommunityCommentsRequest, GetCommentsResponse>(new GetCommunityCommentsRequest(community.CommunityName, counter, "New"));
-                        comments.AddRange(commentsResponse.Comments);
+                        comments.AddRange(commentsResponse.Comments.Where(c => c.Creator.Name != connection.Username));
 
-                        if(commentsResponse.Comments.Count == 0)
+                        if(commentsResponse.Comments.Count(c => c.Creator.Name != connection.Username) == 0)
                         {
                             break;
                         }

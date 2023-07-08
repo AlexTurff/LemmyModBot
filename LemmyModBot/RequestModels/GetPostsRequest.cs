@@ -16,8 +16,10 @@ namespace LemmyModBot.RequestModels
         }
 
 
+        [JsonIgnore]
         public override string OperationRoute => "/post/list";
 
+        [JsonIgnore]
         public override HttpMethod Operation => HttpMethod.Get;
 
 

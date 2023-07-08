@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace LemmyModBot.ModerationTasks
 {
-    internal class RequireTag : ModerationTaskBase
+    internal class RequireSpoilersIfTagged : ModerationTaskBase
     {
 
-        public RequireTag(CommunityModTask modTaskDetails)
+        public RequireSpoilersIfTagged(CommunityModTask modTaskDetails)
         {
             Active = modTaskDetails.Active;
             ContentType = modTaskDetails.ParseContentType();
@@ -36,22 +36,17 @@ namespace LemmyModBot.ModerationTasks
 
         private CommunityModTask ModTaskDetails { get; }
 
-        private static Regex TagRegex = new Regex("^\\[.*\\].*$");
+        private static Regex TagRegex = new Regex("(?!\\[No Spoilers\\])(\\[.*\\]).*");
+        private static Regex SpoilerMarkupRegex = new Regex(".*:: Spoiler.*:::.*", RegexOptions.Singleline|RegexOptions.IgnoreCase);
 
         public override void ValidateComment(GetCommentsResponse.CommentWrapper comment)
         {
-            if (!TagRegex.IsMatch(comment.CommentData.Content))
-            {
-                foreach (var action in ActionJobs)
-                {
-                    action.ActionComment(comment);
-                }
-            }
+            // do nothing
         }
 
         public override void ValidatePost(GetPostsResponse.PostWrapper post)
         {
-            if (!TagRegex.IsMatch(post.PostData.Name))
+            if (TagRegex.IsMatch(post.PostData.Name) && !string.IsNullOrWhiteSpace(post.PostData.Body) && !SpoilerMarkupRegex.IsMatch(post.PostData.Body))
             {
                 foreach (var action in ActionJobs)
                 {

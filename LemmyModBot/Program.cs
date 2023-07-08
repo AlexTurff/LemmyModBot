@@ -10,6 +10,7 @@ using LemmyModBot.RequestModels;
 using LemmyModBot.ResponseModels;
 using LemmyModBot.ModerationTasks;
 using LemmyModBot.ModerationTasks.ModerationActions;
+using NLog;
 
 namespace LemmyModBot
 {
@@ -19,9 +20,13 @@ namespace LemmyModBot
         public static ModerationActionFactory ModerationActionFactory { get; set; }
         public static ModerationTaskFactory ModerationTaskFactory { get; set; }
 
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+
+
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
+            Logger.Info("Starting");
 
             HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
@@ -44,6 +49,7 @@ namespace LemmyModBot
 
             var connection = new HttpApiConnection(lemmyUrl);
             connection.Login(lemmyUser, lemmyPassword);
+            var lastCredentialRefresh = DateTime.UtcNow;
 
             ModerationTaskFactory = new ModerationTaskFactory(builder.Configuration);
             ModerationActionFactory = new ModerationActionFactory(connection);
@@ -54,26 +60,27 @@ namespace LemmyModBot
             var cancellationTokenSource = new CancellationTokenSource();
             var cancellationToken = cancellationTokenSource.Token;
             var pollingDelay = builder.Configuration.GetValue<int>("PollDelaySeconds");
-
+            var refreshCredentialMinutes = builder.Configuration.GetValue<int>("RefreshCredentialMinutes");
 
             while (!cancellationToken.IsCancellationRequested)
             {
                 var startTime = DateTime.UtcNow;
+
+                if(lastCredentialRefresh.AddMinutes(refreshCredentialMinutes) < DateTime.UtcNow)
+                {
+                    connection.Login(lemmyUser, lemmyPassword);
+                    lastCredentialRefresh = DateTime.UtcNow;
+                }
 
                 moderationRunner.Run();
 
                 var endTime = DateTime.UtcNow;
                 var secondsSpent = (endTime - startTime).TotalSeconds;
                 Thread.Sleep(pollingDelay*1000);
-            }         
- 
+            }
+
+            Logger.Info("Stopping");
             Console.WriteLine("Goodbye, World!");
-
-        }
-
-
-
-        
-
+        }       
     }
 }

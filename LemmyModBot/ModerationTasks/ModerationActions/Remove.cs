@@ -22,12 +22,14 @@ namespace LemmyModBot.ModerationTasks.ModerationActions
 
         public void ActionComment(GetCommentsResponse.CommentWrapper comment)
         {
-            throw new NotImplementedException();
+            connection.SendRequest<RemoveCommentRequest, RemoveCommentResponse>(
+                new RemoveCommentRequest(comment.CommentData.Id, modTaskDetails.ReportOrRemoveComment));
         }
 
         public void ActionPost(GetPostsResponse.PostWrapper post)
         {
-            
+            connection.SendRequest<RemovePostRequest, RemovePostResponse>(
+                new RemovePostRequest(post.PostData.Id, modTaskDetails.ReportOrRemoveComment));
         }
     }
 }

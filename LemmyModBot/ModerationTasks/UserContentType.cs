@@ -4,8 +4,11 @@
     internal enum UserContentType
     {
         None = 0,
-        Post = 1,
-        Comment = 2,
-        PostsAndComments = Post|Comment,
+        PostTitle = 1,
+        PostBody = 2,
+        Comment = 4,
+        PostTitlesAndComments = PostTitle | Comment,
+        PostBodiesAndComments = PostBody | Comment,
+        Posts = PostBody | PostTitle,
     }
 }

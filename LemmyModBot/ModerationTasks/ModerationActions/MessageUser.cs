@@ -22,12 +22,14 @@ namespace LemmyModBot.ModerationTasks.ModerationActions
 
         public void ActionComment(GetCommentsResponse.CommentWrapper comment)
         {
-            throw new NotImplementedException();
+            connection.SendRequest<SendPrivateMessageRequest, SendPrivateMessageResponse>(
+                new SendPrivateMessageRequest(comment.Creator.Id, $"{modTaskDetails.PrivateMessageContent} Comment: {comment.CommentData.ApId}"));
         }
 
         public void ActionPost(GetPostsResponse.PostWrapper post)
         {
-            
+            connection.SendRequest<SendPrivateMessageRequest, SendPrivateMessageResponse>(
+                new SendPrivateMessageRequest(post.Creator.Id, $"{modTaskDetails.PrivateMessageContent} Post: {post.PostData.ApId}"));
         }
     }
 }

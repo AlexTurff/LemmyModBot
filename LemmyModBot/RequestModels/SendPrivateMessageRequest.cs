@@ -16,8 +16,10 @@ namespace LemmyModBot.RequestModels
             MessageContent = message ?? throw new ArgumentNullException(nameof(message));
         }
 
+        [JsonIgnore]
         public override string OperationRoute => "/private_message";
 
+        [JsonIgnore]
         public override HttpMethod Operation => HttpMethod.Post;
 
         [JsonPropertyName("recipient_id")]

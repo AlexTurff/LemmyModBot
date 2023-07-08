@@ -22,7 +22,8 @@ namespace LemmyModBot.ModerationTasks.ModerationActions
 
         public void ActionComment(GetCommentsResponse.CommentWrapper comment)
         {
-            throw new NotImplementedException();
+            connection.SendRequest<CreateCommentRequest, CreateCommentResponse>(
+                new CreateCommentRequest(modTaskDetails.Comment, comment.Post.Id, comment.CommentData.Id));
         }
 
         public void ActionPost(GetPostsResponse.PostWrapper post)

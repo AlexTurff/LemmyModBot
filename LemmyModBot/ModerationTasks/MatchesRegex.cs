@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace LemmyModBot.ModerationTasks
 {
-    internal class RequireTag : ModerationTaskBase
+    internal class MatchesRegex : ModerationTaskBase
     {
 
-        public RequireTag(CommunityModTask modTaskDetails)
+        public MatchesRegex(CommunityModTask modTaskDetails)
         {
             Active = modTaskDetails.Active;
             ContentType = modTaskDetails.ParseContentType();
@@ -22,6 +22,19 @@ namespace LemmyModBot.ModerationTasks
 
             ActionJobs = Actions.Select(a => Program.ModerationActionFactory.GetAction(a, modTaskDetails)).ToList();
             ModTaskDetails = modTaskDetails;
+
+            try
+            {
+                Regex = new Regex(modTaskDetails.RegularExpression, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            }
+            catch(ArgumentNullException)
+            {
+                throw new Exception("RegularExpression setting must be set on a Regex Task");
+            }
+            catch (ArgumentException e)
+            {
+                throw new Exception("RegularExpression is invalid: ", e);
+            }
         }
 
         public override bool Active { get; }
@@ -36,11 +49,11 @@ namespace LemmyModBot.ModerationTasks
 
         private CommunityModTask ModTaskDetails { get; }
 
-        private static Regex TagRegex = new Regex("^\\[.*\\].*$");
+        private Regex Regex { get; }
 
         public override void ValidateComment(GetCommentsResponse.CommentWrapper comment)
         {
-            if (!TagRegex.IsMatch(comment.CommentData.Content))
+            if (Regex.IsMatch(comment.CommentData.Content))
             {
                 foreach (var action in ActionJobs)
                 {
@@ -51,7 +64,19 @@ namespace LemmyModBot.ModerationTasks
 
         public override void ValidatePost(GetPostsResponse.PostWrapper post)
         {
-            if (!TagRegex.IsMatch(post.PostData.Name))
+            bool shouldAction = false;
+
+            if (ContentType.HasFlag(UserContentType.PostTitle))
+            {
+                shouldAction = Regex.IsMatch(post.PostData.Name);
+            }
+
+            if (ContentType.HasFlag(UserContentType.PostBody))
+            {
+                shouldAction |= Regex.IsMatch(post.PostData.Body);
+            }
+
+            if (shouldAction)
             {
                 foreach (var action in ActionJobs)
                 {
