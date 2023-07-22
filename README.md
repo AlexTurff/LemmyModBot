@@ -5,12 +5,15 @@ Currently just runs as an executable.
 
 #Configuration
 **LemmyApiHost** - Enter the Lemmy API URI eg. https://lemmy.world/api/v3
+
 **LemmyUsername** - The username for the bot to run as. Only supports an account on the same lemmy instance
+
 **LemmyPassword** - plaintext password for the lemmy account
 
 
 
 **PollDelaySeconds** - time in seconds after each batch that the bot will wait before searching for new posts/comments
+
 **RefreshCredentialMinutes** - how often the bot reauthenticates - have not yet tested the default expiry so this is a workaround.
 
 
@@ -20,6 +23,7 @@ Next, under Communities -> List you need to configure what the bot will do in ea
 
 
 **Name** - the name of the community (as found in the URL)
+
 **Tasks** - the list of Tasks the bot will do in that community.
 
 
